@@ -84,6 +84,7 @@ const LoginForm = () => {
               </span>
               <div className="flex-grow h-px bg-gray-500" />
             </div>
+
             {/* Form */}
             <FormProvider {...form}>
               <form

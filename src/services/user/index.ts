@@ -183,7 +183,7 @@ export const changePassword = async (
     if (!token) throw new Error("Unauthorized: No access token found.");
 
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_API}/auth/change-password`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/change-password`,
       {
         method: "POST",
         headers: {

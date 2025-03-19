@@ -9,6 +9,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getMe } from "@/services/user";
 import UserUpdateModal from "../ui/core/Modal/UserUpdateModal";
+import { MdLockReset } from "react-icons/md";
+import PasswordChangeModal from "../ui/core/Modal/PasswordChangeModal";
 
 const DashboardClient = () => {
   const [user, setUser] = useState<any>(null);
@@ -17,6 +19,7 @@ const DashboardClient = () => {
   const [selectedProfile, setSelectedProfile] = useState(null);
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
 
   // Function to open the update modal
   const handleUpdate = (profile: any) => {
@@ -113,6 +116,32 @@ const DashboardClient = () => {
             </a>
           </div>
 
+          <div className="flex items-center mt-7">
+            <div className="flex-grow h-px bg-gray-500"></div>
+            <div className="mx-2">Change Password</div>
+            <div className="flex-grow h-px bg-gray-500"></div>
+          </div>
+          <div className="flex justify-center mx-auto">
+            <div
+              className="text-3xl text-accent hover:text-red-600 cursor-pointer transition-transform "
+              onClick={() => setIsPasswordModalOpen(true)}
+            >
+              <motion.div
+                className="text-3xl text-accent hover:text-red-600 cursor-pointer transition-transform"
+                onClick={() => setIsPasswordModalOpen(true)}
+                whileHover={{ scale: 1.2, rotate: 10 }} // Slight tilt and scale on hover
+                whileTap={{ scale: 0.9 }} // Shrink effect on click
+                animate={{ rotate: [0, 45, -35, 0], scale: [1, 1.3, 1] }} // Rotating + Scaling Effect
+                transition={{
+                  repeat: Infinity, // Infinite animation loop
+                  duration: 2, // Animation duration
+                  ease: "easeInOut",
+                }}
+              >
+                <MdLockReset />
+              </motion.div>
+            </div>
+          </div>
           {/* Update Modal */}
           {isModalOpen && selectedProfile && (
             <UserUpdateModal
@@ -120,11 +149,17 @@ const DashboardClient = () => {
               onClose={() => setIsModalOpen(false)}
               user={user}
               isOpen={isModalOpen} // ✅ Add this line
-              
             />
           )}
         </div>
       )}
+      {isPasswordModalOpen && (
+        <PasswordChangeModal
+          isOpen={isPasswordModalOpen}
+          onClose={() => setIsPasswordModalOpen(false)}
+        />
+      )}
+      <div></div>
     </motion.div>
   );
 };

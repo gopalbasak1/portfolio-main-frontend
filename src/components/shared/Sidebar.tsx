@@ -10,6 +10,7 @@ import { CircleUser, Mails, Rows4, ScrollText } from "lucide-react";
 import ThemeToggle from "@/app/theme-toggle";
 import { MdAddChart } from "react-icons/md";
 import { LuUsersRound } from "react-icons/lu";
+import { logout } from "@/services/AuthService";
 
 const Sidebar = () => {
   const pathname = usePathname();
@@ -197,7 +198,7 @@ const Sidebar = () => {
         <button
           onClick={() => {
             setIsOpen(false);
-            signOut();
+            logout();
           }}
           className="flex items-center space-x-2 text-red-400 hover:text-red-600 p-2 rounded-xl hover:underline mt-4"
         >
