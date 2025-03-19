@@ -72,7 +72,7 @@ const Header = () => {
               >
                 {user.role === "admin" && (
                   <Link
-                    href="/admin-dashboard"
+                    href="/admin/dashboard"
                     className="block text-accent hover:underline mt-2"
                   >
                     Dashboard

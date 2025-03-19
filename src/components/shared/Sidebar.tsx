@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { FaHome, FaSignOutAlt, FaBars, FaTimes } from "react-icons/fa";
 import { LuLayoutDashboard } from "react-icons/lu";
 import { MdOutlineCreateNewFolder } from "react-icons/md";
-import { Mails, Rows4, ScrollText } from "lucide-react";
+import { CircleUser, Mails, Rows4, ScrollText } from "lucide-react";
 import ThemeToggle from "@/app/theme-toggle";
 import { MdAddChart } from "react-icons/md";
 import { LuUsersRound } from "react-icons/lu";
@@ -74,7 +74,7 @@ const Sidebar = () => {
 
           <li>
             <Link
-              href="/dashboard"
+              href="/admin/dashboard"
               onClick={() => setIsOpen(false)}
               className={`flex items-center space-x-2 p-2 rounded-xl ${
                 isActive("/dashboard")
@@ -89,7 +89,7 @@ const Sidebar = () => {
 
           <li>
             <Link
-              href="/dashboard/usersInfo"
+              href="/admin/dashboard/usersInfo"
               onClick={() => setIsOpen(false)}
               className={`flex items-center space-x-2 p-2 rounded-xl ${
                 isActive("/dashboard/usersInfo")
@@ -104,7 +104,7 @@ const Sidebar = () => {
 
           <li>
             <Link
-              href="/dashboard/project/createProject"
+              href="/admin/dashboard/project/createProject"
               onClick={() => setIsOpen(false)}
               className={`flex items-center space-x-2 p-2 rounded-xl ${
                 isActive("/dashboard/project/createProject")
@@ -119,7 +119,7 @@ const Sidebar = () => {
 
           <li>
             <Link
-              href="/dashboard/project/allProject"
+              href="/admin/dashboard/project/allProject"
               onClick={() => setIsOpen(false)}
               className={`flex items-center space-x-2 p-2 rounded-xl ${
                 isActive("/dashboard/project/allProject")
@@ -134,7 +134,7 @@ const Sidebar = () => {
 
           <li>
             <Link
-              href="/dashboard/blog/createBlog"
+              href="/admin/dashboard/blog/createBlog"
               onClick={() => setIsOpen(false)}
               className={`flex items-center space-x-2 p-2 rounded-xl ${
                 isActive("/dashboard/blog/createBlog")
@@ -149,7 +149,7 @@ const Sidebar = () => {
 
           <li>
             <Link
-              href="/dashboard/blog/allBlog"
+              href="/admin/dashboard/blog/allBlog"
               onClick={() => setIsOpen(false)}
               className={`flex items-center space-x-2 p-2 rounded-xl ${
                 isActive("/dashboard/blog/allBlog")
@@ -164,7 +164,7 @@ const Sidebar = () => {
 
           <li>
             <Link
-              href="/dashboard/message"
+              href="/admin/dashboard/message"
               onClick={() => setIsOpen(false)}
               className={`flex items-center space-x-2 p-2 rounded-xl ${
                 isActive("/dashboard/message")
@@ -174,6 +174,22 @@ const Sidebar = () => {
             >
               <Mails className="h-5 w-5" />
               <span>Messages</span>
+            </Link>
+          </li>
+
+          <li>
+            <Link
+              href="/admin/dashboard/profile"
+              onClick={() => setIsOpen(false)}
+              className={`flex items-center space-x-2 p-2 rounded-xl ${
+                isActive("/dashboard/profile")
+                  ? "underline text-[#00ff99]"
+                  : "hover:text-[#00ff99] hover:underline"
+              }`}
+            >
+              <CircleUser className="h-5 w-5" />
+
+              <span>My Profile</span>
             </Link>
           </li>
         </ul>

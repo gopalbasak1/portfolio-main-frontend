@@ -70,7 +70,7 @@ const MobileNav = () => {
 
               {user.role === "admin" && (
                 <Link
-                  href="/dashboard"
+                  href="/admin/dashboard"
                   className="mt-4 text-lg hover:text-accent transition-all"
                 >
                   Dashboard
