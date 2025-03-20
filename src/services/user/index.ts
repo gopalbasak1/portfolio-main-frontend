@@ -29,8 +29,8 @@ export const getAllUsersByAdmin = async (
   try {
     const res = await fetch(
       `${
-        process.env.NEXT_PUBLIC_BASE_API
-      }/users/admin?limit=${limit}&page=${page}&${params.toString()}`,
+        process.env.NEXT_PUBLIC_BACKEND_URL
+      }/users?limit=${limit}&page=${page}&${params.toString()}`,
       {
         method: "GET",
         headers: {
@@ -54,7 +54,7 @@ export const deleteUserByAdmin = async (userId: string): Promise<any> => {
 
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_API}/users/admin/${userId}`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/users/${userId}`,
       {
         method: "DELETE",
         headers: {
@@ -75,7 +75,7 @@ export const statusChangeUserByAdmin = async (
 ): Promise<any> => {
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_API}/users/admin/change-status/${userId}`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/users/admin/change-status/${userId}`,
       {
         method: "POST",
         headers: {
