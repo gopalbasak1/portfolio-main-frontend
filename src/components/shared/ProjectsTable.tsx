@@ -9,18 +9,13 @@ import { FaEdit, FaTrash } from "react-icons/fa";
 import Image from "next/image";
 import UpdateProjectModal from "./UpdateProjectModal";
 import { IMeta, Project } from "@/types";
-import { ScrollArea } from "../ui/scroll-area";
+
 import { ColumnDef } from "@tanstack/react-table";
 import { PFTable } from "../ui/core/PFTable";
 import TablePagination from "../ui/core/PFTable/TablePagination";
 import { Trash } from "lucide-react";
 import ProjectDeleteModal from "../ui/core/Modal/ProjectDeleteModal";
 import { deleteProjectByAdmin } from "@/services/project";
-// Import the modal component
-
-// type ProjectsTableProps = {
-//   projects: Project[];
-// };
 
 const ProjectsTable = ({
   projects,
@@ -31,7 +26,7 @@ const ProjectsTable = ({
 }) => {
   // console.log(projects);
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
+
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -99,6 +94,8 @@ const ProjectsTable = ({
       accessorKey: "image",
       header: "Image",
       cell: ({ row }) => {
+        const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+
         const imageUrl =
           Array.isArray(row.original.imageUrls) &&
           row.original.imageUrls.length > 0
@@ -129,13 +126,33 @@ const ProjectsTable = ({
             : "/placeholder-image.jpg"; // Fallback if invalid
 
         return (
-          <Image
-            src={validImageUrl}
-            alt="Users Image"
-            width={40}
-            height={40}
-            className="w-10 h-10 rounded-md object-cover"
-          />
+          <div className="relative">
+            {/* Small Thumbnail */}
+            <Image
+              src={validImageUrl}
+              alt="Project Image"
+              width={40}
+              height={40}
+              className="w-10 h-10 rounded-md object-cover cursor-pointer"
+              onMouseEnter={() => setIsPreviewOpen(true)} // Open preview
+            />
+
+            {/* Fullscreen Preview */}
+            {isPreviewOpen && (
+              <div
+                className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-80 z-50"
+                onClick={() => setIsPreviewOpen(false)} // Close on click
+              >
+                <Image
+                  src={validImageUrl}
+                  alt="Preview"
+                  width={1920}
+                  height={1080}
+                  className="w-full h-full object-contain"
+                />
+              </div>
+            )}
+          </div>
         );
       },
     },

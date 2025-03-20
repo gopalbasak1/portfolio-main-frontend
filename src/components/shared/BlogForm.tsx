@@ -9,21 +9,22 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useState } from "react";
 
-import { Session } from "next-auth";
 import {
   createBlog,
   uploadImageToCloudinary,
 } from "@/utils/actions/createBlogs";
+import ImagePreviewer from "../ui/core/PFImageUploader/ImagePreviewer";
+import PFImageUploader from "../ui/core/PFImageUploader";
+import { addBlog } from "@/services/blog";
 
 export type BlogData = {
   title?: string | null;
   content?: string | null;
   category?: string;
-  image?: FileList | string | null;
-  //session: string | null;
+  imageUrls?: string[];
 };
 
-const BlogForm = ({ session }: { session: Session | null }) => {
+const BlogForm = () => {
   const {
     register,
     handleSubmit,
@@ -31,44 +32,26 @@ const BlogForm = ({ session }: { session: Session | null }) => {
   } = useForm<BlogData>();
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  console.log("bs", session?.user?.accessToken);
-
+  const [imageFiles, setImageFiles] = useState<File[] | []>([]);
+  const [imagePreview, setImagePreview] = useState<string[] | []>([]);
   const onSubmit = async (data: BlogData) => {
     try {
       setLoading(true);
-      let imageUrl = "";
-
-      if (data.image && data.image.length > 0) {
-        const file = data.image[0];
-        if (file instanceof File) {
-          imageUrl = (await uploadImageToCloudinary(file)) || "";
-        }
-      }
-      const userId = session?.user?.id;
-      const accessToken = session?.user?.accessToken;
-      console.log("id, token", userId, accessToken);
 
       const formattedData = {
-        title: data.title,
-        content: data.content,
-        category: data.category,
-        image: imageUrl || "",
+        ...data,
+        imageUrls: imagePreview,
         // Or session ID if available
       };
-      console.log(formattedData, userId, accessToken);
-      // ✅ Check if userId or accessToken is missing
-      if (!userId || !accessToken) {
-        toast.error("User not authenticated. Please log in.");
-        setLoading(false);
-        return;
-      }
+      console.log(formattedData);
+
       // Pass token to the server function
-      const res = await createBlog(formattedData, userId, accessToken);
+      const res = await addBlog(formattedData);
       //console.log("djd", res);
       if (res.success) {
         toast.success(res.message);
         router.push(
-          `${process.env.NEXT_PUBLIC_FRONTEND_URL}/dashboard/blog/allBlog`
+          `${process.env.NEXT_PUBLIC_FRONTEND_URL}/admin/dashboard/blog/allBlog`
         );
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -123,13 +106,22 @@ const BlogForm = ({ session }: { session: Session | null }) => {
               <p className="text-red-500">Blog Category is required</p>
             )}
 
-            <Input
-              className="rounded-xl py-2 text-[#9ca49e] bg-[#181818]"
-              type="file"
-              accept="image/*"
-              id="image"
-              {...register("image")}
-            />
+            <div className="flex gap-4 ">
+              {imagePreview?.length > 0 ? (
+                <ImagePreviewer
+                  setImageFiles={setImageFiles}
+                  imagePreview={imagePreview}
+                  setImagePreview={setImagePreview}
+                  className="ml-[53px]"
+                />
+              ) : (
+                <PFImageUploader
+                  setImageFiles={setImageFiles}
+                  setImagePreview={setImagePreview}
+                  label="Upload Blog Image"
+                />
+              )}
+            </div>
 
             <Textarea
               className="rounded-xl w-full h-48 bg-[#181818]"

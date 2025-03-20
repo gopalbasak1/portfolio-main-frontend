@@ -114,7 +114,7 @@ const UpdateProjectModal: React.FC<UpdateProjectModalProps> = ({
       const res = await updateProjectByAdmin(formattedData, project._id);
       console.log(res);
       if (res.success) {
-        toast.success("Project updated successfully!");
+        toast.success(res.message);
         router.push(
           `${process.env.NEXT_PUBLIC_FRONTEND_URL}/admin/dashboard/project/allProject`
         );
@@ -235,7 +235,7 @@ const UpdateProjectModal: React.FC<UpdateProjectModalProps> = ({
                 <PFImageUploader
                   setImageFiles={setImageFiles}
                   setImagePreview={setImagePreview}
-                  label="Upload Image"
+                  label="Upload Project Image"
                   className=""
                 />
                 <ImagePreviewer

@@ -37,7 +37,10 @@ export function PFTable<TData, TValue>({
             <TableRow key={headerGroup?.id}>
               {headerGroup.headers.map((header) => {
                 return (
-                  <TableHead key={header.id} className="w-[100px]">
+                  <TableHead
+                    key={header.id}
+                    className="w-[100px] border border-white/30"
+                  >
                     {header.isPlaceholder
                       ? null
                       : flexRender(
@@ -58,7 +61,10 @@ export function PFTable<TData, TValue>({
                 data-state={row.getIsSelected() && "selected"}
               >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id} className="font-medium">
+                  <TableCell
+                    key={cell.id}
+                    className="font-medium border border-white/30"
+                  >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}

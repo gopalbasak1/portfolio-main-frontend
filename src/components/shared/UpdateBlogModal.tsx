@@ -4,13 +4,16 @@ import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
+import { updateBlogByAdmin } from "@/services/blog";
+import PFImageUploader from "../ui/core/PFImageUploader";
+import ImagePreviewer from "../ui/core/PFImageUploader/ImagePreviewer";
 
 interface Blog {
   _id: string;
   title: string;
   content: string;
   category: string;
-  image: string;
+  imageUrls: string[];
 }
 
 interface UpdateBlogModalProps {
@@ -27,63 +30,38 @@ const UpdateBlogModal: React.FC<UpdateBlogModalProps> = ({
   const [title, setTitle] = useState(blog.title);
   const [content, setContent] = useState(blog.content);
   const [category, setCategory] = useState(blog.category);
-  const [image, setImage] = useState<File | null>(null);
+  const [imageFiles, setImageFiles] = useState<File[] | []>([]);
+  const [imagePreview, setImagePreview] = useState<string[]>(
+    blog.imageUrls || []
+  );
   const [loading, setLoading] = useState(false);
 
   const handleUpdate = async () => {
     try {
       setLoading(true);
-      let imageUrl = blog.image;
+      // Ensure image URLs exist
+      const imageUrls = imagePreview.length > 0 ? imagePreview : [];
 
-      if (image) {
-        const formData = new FormData();
-        formData.append("file", image);
-        formData.append(
-          "upload_preset",
-          `${process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}`
+      const formattedData = {
+        title,
+        content,
+        category,
+        imageUrls,
+      };
+
+      const res = await updateBlogByAdmin(formattedData, blog._id);
+      if (res.success) {
+        toast.success(res.message);
+        router.push(
+          `${process.env.NEXT_PUBLIC_FRONTEND_URL}/admin/dashboard/blog/allBlog`
         );
-
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_CLOUDINARY_API_URL}`,
-          {
-            method: "POST",
-            body: formData,
-          }
-        );
-
-        const data = await res.json();
-        if (!res.ok) {
-          throw new Error("Image upload failed");
-        }
-        imageUrl = data.secure_url;
+        router.refresh();
+        onClose();
+      } else {
+        toast.error(res.message);
       }
-
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/blogs/${blog._id}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            title,
-            content,
-            category,
-            image: imageUrl,
-          }),
-        }
-      );
-
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.message || "Failed to update blog");
-      }
-
-      toast.success("Blog updated successfully!");
-      onClose(); // Close modal after update
-      router.refresh();
     } catch (error: any) {
-      toast.error(error.message || "Something went wrong while updating.");
+      toast.error(error.message);
     } finally {
       setLoading(false);
     }
@@ -133,17 +111,22 @@ const UpdateBlogModal: React.FC<UpdateBlogModalProps> = ({
         </div>
 
         <div>
-          <label className="text-white">Blog Image *</label>
-          <Input
-            type="file"
-            className="w-full p-2 bg-[#1c1c22] text-white rounded-xl"
-            accept="image/*"
-            onChange={(e) => {
-              if (e.target.files && e.target.files.length > 0) {
-                setImage(e.target.files[0]); // Now TypeScript knows it's safe
-              }
-            }}
-          />
+          <div className="flex gap-4 ">
+            {imagePreview?.length > 0 ? (
+              <ImagePreviewer
+                setImageFiles={setImageFiles}
+                imagePreview={imagePreview}
+                setImagePreview={setImagePreview}
+                className="ml-[35px]"
+              />
+            ) : (
+              <PFImageUploader
+                setImageFiles={setImageFiles}
+                setImagePreview={setImagePreview}
+                label="Upload Blog Image"
+              />
+            )}
+          </div>
         </div>
 
         <div className="flex justify-end gap-3">

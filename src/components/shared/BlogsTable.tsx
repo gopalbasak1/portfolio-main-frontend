@@ -9,12 +9,17 @@ import { FaTrash } from "react-icons/fa6";
 import { FaEdit } from "react-icons/fa";
 import Image from "next/image";
 import Link from "next/link";
+import { IMeta } from "@/types";
+import { deleteBlogByAdmin } from "@/services/blog";
+
+import BlogDeleteModal from "../ui/core/Modal/BlogDeleteModal";
+import TablePagination from "../ui/core/PFTable/TablePagination";
 
 type Blog = {
   _id: string;
   title: string;
   content: string;
-  image: string;
+  imageUrls: string[];
   category: string;
   user: {
     name: string;
@@ -23,53 +28,41 @@ type Blog = {
 
 type BlogsTableProps = {
   blogs: Blog[];
-  session: any;
+  meta: IMeta;
 };
 
-const BlogsTable = ({ blogs, session }: BlogsTableProps) => {
+const BlogsTable = ({ blogs, meta }: BlogsTableProps) => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [selectedBlog, setSelectedBlog] = useState<Blog | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this blog?")) return;
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [selectedItem, setSelectedItem] = useState<string | null>(null);
 
+  const handleDelete = (data: Blog) => {
+    console.log(data);
+    setSelectedIds([data?._id]);
+    setSelectedItem(data?.title);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
     try {
-      setLoading(true);
-
-      const token = session?.user?.accessToken;
-      if (!token) {
-        toast.error("Authentication failed. Please log in again.");
-        router.push(`${process.env.NEXT_PUBLIC_FRONTEND_URL}/login`);
-        return;
-      }
-
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/blogs/${id}`,
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `${token}`,
-          },
+      if (selectedIds.length > 0) {
+        const id = selectedIds[0]; // ✅ আইডি ফিক্স করা হলো
+        const res = await deleteBlogByAdmin(id);
+        if (res.success) {
+          toast.success(res.message);
+          setIsDeleteModalOpen(false); // ✅ Modal বন্ধ করো
+          router.refresh(); // ✅ পেজ রিফ্রেশ করে আপডেট দেখাও
+        } else {
+          toast.error(res.message);
         }
-      );
-
-      const data = await res.json();
-      if (!res.ok) {
-        console.error("Delete error:", data);
-        throw new Error(data.message || "Failed to delete blog");
       }
-
-      toast.success("Blog deleted successfully!");
-
-      router.refresh();
     } catch (error: any) {
-      console.error(error.message);
       toast.error(error.message || "Something went wrong while deleting.");
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -96,7 +89,9 @@ const BlogsTable = ({ blogs, session }: BlogsTableProps) => {
         <tbody>
           {blogs.map((blog, index) => (
             <tr key={blog._id} className=" hover:bg-gray-800">
-              <td className="px-4 py-2 border border-gray-600">{index + 1}</td>
+              <td className="px-4 py-2 border border-gray-600">
+                {(meta.page - 1) * meta.limit + index + 1}
+              </td>
               <td className="px-4 py-2 border border-gray-600">
                 {blog.title.length > 10
                   ? blog.title.slice(0, 20) + "..."
@@ -111,11 +106,11 @@ const BlogsTable = ({ blogs, session }: BlogsTableProps) => {
                 {blog.category}
               </td>
               <td className="px-4 py-2 border border-gray-600">
-                {blog.image && (
+                {blog.imageUrls[0] && (
                   <Image
                     width={64}
                     height={64}
-                    src={blog.image}
+                    src={blog.imageUrls[0]}
                     alt={blog.title}
                     className="w-16 h-16 object-cover rounded"
                   />
@@ -139,7 +134,7 @@ const BlogsTable = ({ blogs, session }: BlogsTableProps) => {
                   <FaEdit />
                 </button>
                 <button
-                  onClick={() => handleDelete(blog._id)}
+                  onClick={() => handleDelete(blog)}
                   className="text-red-400 hover:text-red-500"
                 >
                   <FaTrash />
@@ -150,6 +145,10 @@ const BlogsTable = ({ blogs, session }: BlogsTableProps) => {
         </tbody>
       </table>
 
+      <div>
+        <TablePagination totalPage={meta.totalPage} />
+      </div>
+
       {/* Update Blog Modal */}
       {isModalOpen && selectedBlog && (
         <UpdateBlogModal
@@ -158,6 +157,14 @@ const BlogsTable = ({ blogs, session }: BlogsTableProps) => {
           router={router}
         />
       )}
+
+      {/* Deleted Project Modal */}
+      <BlogDeleteModal
+        title={selectedItem}
+        isOpen={isDeleteModalOpen}
+        onOpenChange={setIsDeleteModalOpen}
+        onConfirm={handleDeleteConfirm}
+      />
     </div>
   );
 };
