@@ -114,6 +114,11 @@ const UserTable = ({ users, meta }: { users: IUser[]; meta: IMeta }) => {
       cell: ({ row }) => <span>{row.original.phoneNumber}</span>,
     },
     {
+      accessorKey: "role",
+      header: "Role",
+      cell: ({ row }) => <span>{row.original.role}</span>,
+    },
+    {
       accessorKey: "status",
       header: "Status",
       cell: ({ row }) => (

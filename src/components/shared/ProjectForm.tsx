@@ -23,20 +23,23 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import ImagePreviewer from "../ui/core/PFImageUploader/ImagePreviewer";
+import PFImageUploader from "../ui/core/PFImageUploader";
+import { addProject } from "@/services/project";
 
 // Define the form data type
 export type ProjectData = {
   title: string;
   description: string;
   liveLink: string;
-  image?: FileList | string;
+  imageUrls?: string[] | [];
   session: string | null;
   category: string;
   stack: string | { name: string }[]; // ✅ Allow stack to be a string OR an array
   github: string;
 };
 
-const ProjectForm = ({ session }: { session: Session | null }) => {
+const ProjectForm = () => {
   const {
     register,
     handleSubmit,
@@ -52,36 +55,22 @@ const ProjectForm = ({ session }: { session: Session | null }) => {
       github: "",
     },
   });
-
+  const [imageFiles, setImageFiles] = useState<File[] | []>([]);
+  const [imagePreview, setImagePreview] = useState<string[] | []>([]);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const onSubmit = async (data: ProjectData) => {
     try {
       setLoading(true);
-      let imageUrl = "";
 
-      if (
-        data.image &&
-        data.image instanceof FileList &&
-        data.image.length > 0
-      ) {
-        const file = data.image[0];
-        if (file instanceof File) {
-          imageUrl = (await uploadImageToCloudinary(file)) || "";
-        }
-      }
-
-      const userId = session?.user?.id ?? "";
-      const accessToken = session?.user?.accessToken ?? "";
-
-      // Convert stack from a comma-separated string to an array of objects
+      // Ensure stack is an array of objects
       const stackArray =
         typeof data.stack === "string"
           ? data.stack
               .split(",")
               .map((tech) => ({ name: tech.trim() }))
-              .filter((tech) => tech.name !== "") // Remove empty entries
+              .filter((tech) => tech.name !== "")
           : Array.isArray(data.stack)
           ? data.stack
           : [];
@@ -92,27 +81,30 @@ const ProjectForm = ({ session }: { session: Session | null }) => {
         return;
       }
 
-      const formattedData: ProjectData = {
+      // Ensure image URLs exist
+      const imageUrls = imagePreview.length > 0 ? imagePreview : [];
+
+      const formattedData = {
         title: data.title,
         description: data.description,
         liveLink: data.liveLink,
-        image: imageUrl || "",
+        imageUrls: imageUrls, // Ensure images are included
         github: data.github,
         category: data.category,
-        stack: stackArray, // ✅ Now properly formatted
-        session: session?.user?.id || null,
+        stack: stackArray,
       };
 
-      console.log(formattedData, userId, accessToken);
-
-      const res = await createProject(formattedData, userId, accessToken);
+      console.log("📤 Sending Data:", formattedData);
+      const res = await addProject(formattedData);
 
       if (res.success) {
         toast.success("Project created successfully!");
         router.push(
-          `${process.env.NEXT_PUBLIC_FRONTEND_URL}/dashboard/project/allProject`
+          `${process.env.NEXT_PUBLIC_FRONTEND_URL}/admin/dashboard/project/allProject`
         );
-        router.refresh(); // ✅ Refresh the page to reflect changes
+        router.refresh(); // ✅ Ensure UI updates
+      } else {
+        toast.error(`Error: ${res.message}`);
       }
     } catch (error: any) {
       console.error(error.message);
@@ -194,13 +186,23 @@ const ProjectForm = ({ session }: { session: Session | null }) => {
               </div>
 
               <div>
-                <label className="text-white">Upload New Image</label>
-                <Input
-                  className="rounded-xl py-2 text-[#9ca49e] bg-[#181818]"
-                  type="file"
-                  accept="image/*"
-                  {...register("image")}
-                />
+                <div className="flex justify-between items-center">
+                  <p className="">Images </p>
+                </div>
+                <div className="flex gap-4 ">
+                  <PFImageUploader
+                    setImageFiles={setImageFiles}
+                    setImagePreview={setImagePreview}
+                    label="Upload Image"
+                    className="w-fit mt-0"
+                  />
+                  <ImagePreviewer
+                    className="flex flex-wrap gap-4"
+                    setImageFiles={setImageFiles}
+                    imagePreview={imagePreview}
+                    setImagePreview={setImagePreview}
+                  />
+                </div>
               </div>
             </div>
 

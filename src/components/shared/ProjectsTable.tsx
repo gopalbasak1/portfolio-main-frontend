@@ -8,154 +8,198 @@ import { useState } from "react";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import Image from "next/image";
 import UpdateProjectModal from "./UpdateProjectModal";
-import { Project } from "@/types";
+import { IMeta, Project } from "@/types";
 import { ScrollArea } from "../ui/scroll-area";
+import { ColumnDef } from "@tanstack/react-table";
+import { PFTable } from "../ui/core/PFTable";
+import TablePagination from "../ui/core/PFTable/TablePagination";
+import { Trash } from "lucide-react";
+import ProjectDeleteModal from "../ui/core/Modal/ProjectDeleteModal";
+import { deleteProjectByAdmin } from "@/services/project";
 // Import the modal component
 
-type ProjectsTableProps = {
-  projects: Project[];
-  session: any;
-};
+// type ProjectsTableProps = {
+//   projects: Project[];
+// };
 
-const ProjectsTable = ({ projects, session }: ProjectsTableProps) => {
+const ProjectsTable = ({
+  projects,
+  meta,
+}: {
+  projects: Project[];
+  meta: IMeta;
+}) => {
+  // console.log(projects);
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [selectedItem, setSelectedItem] = useState<string | null>(null);
+  const [updateModalOpen, setUpdateModalOpen] = useState(false);
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this project?")) return;
+  const handleDelete = (data: Project) => {
+    console.log(data);
+    setSelectedIds([data?._id]);
+    setSelectedItem(data?.title);
+    setModalOpen(true);
+  };
 
+  const handleDeleteConfirm = async () => {
     try {
-      setLoading(true);
-
-      const token = session?.user?.accessToken;
-      if (!token) {
-        toast.error("Authentication failed. Please log in again.");
-        router.push(`${process.env.NEXT_PUBLIC_FRONTEND_URL}/login`);
-        return;
-      }
-
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/projects/${id}`,
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `${token}`,
-          },
+      if (selectedIds) {
+        const res = await deleteProjectByAdmin(selectedIds[0]);
+        console.log(res);
+        if (res.success) {
+          toast.success(res.message);
+          setModalOpen(false);
+        } else {
+          toast.error(res.message);
         }
-      );
-
-      const data = await res.json();
-      if (!res.ok) {
-        console.error("Delete error:", data);
-        throw new Error(data.message || "Failed to delete project");
       }
-
-      toast.success("Project deleted successfully!");
-
-      router.refresh();
     } catch (error: any) {
-      console.error(error.message);
-      toast.error(error.message || "Something went wrong while deleting.");
-    } finally {
-      setLoading(false);
+      console.log(error);
     }
   };
 
   const handleUpdate = (project: Project) => {
     setSelectedProject(project);
-    setIsModalOpen(true);
+    setUpdateModalOpen(true);
   };
 
-  return (
-    <ScrollArea className="w-full h-[800px] ">
-      <div className="overflow-x-auto">
-        <table className="min-w-full border-collapse text-white">
-          <thead className="">
-            <tr>
-              <th className="px-4 py-2 border ">SL</th>
-              <th className="px-4 py-2 border ">Title</th>
-              <th className="px-4 py-2 border ">Description</th>
-              <th className="px-4 py-2 border ">Live Link</th>
-              <th className="px-4 py-2 border ">Image</th>
-              <th className="px-4 py-2 border ">Project By</th>
-              <th className="px-4 py-2 border ">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {projects.map((project, index) => (
-              <tr key={project._id} className="">
-                <td className="px-4 py-2 border border-gray-600">
-                  {index + 1}
-                </td>
-                <td className="px-4 py-2 border border-gray-600">
-                  {project.title}
-                </td>
-                <td className="px-4 py-2 border border-gray-600">
-                  {project.description
-                    ? project.description.length > 10
-                      ? project.description.slice(0, 25) + "..."
-                      : project.description
-                    : "No description"}
-                </td>
+  const columns: ColumnDef<Project>[] = [
+    {
+      id: "sl",
+      header: "Sl No.",
+      cell: ({ row }) => {
+        const serialNumber = (meta.page - 1) * meta.limit + row.index + 1;
+        return <span>{serialNumber}</span>;
+      },
+      //*   (2 - 1) * 10 + 0 + 1 = 10 + 1 = 11
+    },
+    {
+      accessorKey: "title",
+      header: "Title",
+      cell: ({ row }) => <span>{row.original.title}</span>,
+    },
+    {
+      accessorKey: "description",
+      header: "Description",
+      cell: ({ row }) => {
+        const shortDescription =
+          row.original.description.length > 10
+            ? row.original.description.slice(0, 20) + " ..."
+            : row.original.description;
 
-                <td className="px-4 py-2 border border-gray-600 text-center">
-                  {project.liveLink && (
-                    <a
-                      href={project.liveLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-400 underline hover:text-accent"
-                    >
-                      View
-                    </a>
-                  )}
-                </td>
-                <td className="px-4 py-2 border border-gray-600">
-                  {typeof project.image === "string" && (
-                    <Image
-                      width={64}
-                      height={64}
-                      src={project.image}
-                      alt={project.title || "Project image"}
-                      className="w-16 h-16 object-cover rounded"
-                    />
-                  )}
-                </td>
-                <td className="px-4 py-2 border border-gray-600">
-                  {project?.user?.name}
-                </td>
-                <td className="px-4 py-2 border border-gray-600">
-                  <button
-                    onClick={() => handleUpdate(project)}
-                    className="text-yellow-400 hover:text-yellow-500 mr-2"
-                  >
-                    <FaEdit />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(project._id)}
-                    className="text-red-400 hover:text-red-500"
-                  >
-                    <FaTrash />
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        return <span>{shortDescription}</span>;
+      },
+    },
 
-        {/* Update Project Modal */}
-        {isModalOpen && selectedProject && (
-          <UpdateProjectModal
-            project={selectedProject}
-            onClose={() => setIsModalOpen(false)}
-            router={router}
+    {
+      accessorKey: "image",
+      header: "Image",
+      cell: ({ row }) => {
+        const imageUrl =
+          Array.isArray(row.original.imageUrls) &&
+          row.original.imageUrls.length > 0
+            ? row.original.imageUrls[0] // ✅ Use the first valid image
+            : "/placeholder-image.jpg"; // ✅ Provide a fallback image
+
+        //**
+        // Checks if row.original.imageUrls is an array and has at least one image. (  const imageUrl =
+        //   Array.isArray(row.original.imageUrls) &&
+        //   row.original.imageUrls.length > 0)
+        // If true, it uses the first image.(
+        //         ? row.original.imageUrls[0] // ✅ Use the first valid image
+        //         : "/placeholder-image.jpg"; // ✅ Provide a fallback image
+        // )
+        // If row.original.imageUrls contains images, it selects the first one:
+        // 👉 row.original.imageUrls[0]
+        // Otherwise, it sets a default fallback image:
+        // 👉 "/placeholder-image.jpg"
+        // Ensures the imageUrl is a valid absolute URL:
+        // ✅ Starts with "http" → Likely an external URL.
+        // ✅ Starts with "/" → A local image path.
+        //
+        // */
+        // ✅ Ensure imageUrl is a valid absolute URL
+        const validImageUrl =
+          imageUrl.startsWith("http") || imageUrl.startsWith("/")
+            ? imageUrl
+            : "/placeholder-image.jpg"; // Fallback if invalid
+
+        return (
+          <Image
+            src={validImageUrl}
+            alt="Users Image"
+            width={40}
+            height={40}
+            className="w-10 h-10 rounded-md object-cover"
           />
-        )}
-      </div>
-    </ScrollArea>
+        );
+      },
+    },
+
+    {
+      accessorKey: "liveLink",
+      header: "Live Link",
+      cell: ({ row }) => (
+        <span>
+          {row.original.liveLink && (
+            <a
+              href={row.original.liveLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-400 underline hover:text-accent"
+            >
+              View
+            </a>
+          )}
+        </span>
+      ),
+    },
+
+    {
+      accessorKey: "action",
+      header: "Action",
+      cell: ({ row }) => (
+        <div>
+          <button
+            onClick={() => handleUpdate(row.original)}
+            className="text-yellow-400 hover:text-yellow-500 mr-2"
+          >
+            <FaEdit className="w-5 h-5 hover:text-red-500" />
+          </button>
+          <button onClick={() => handleDelete(row.original)}>
+            <Trash className="w-5 h-5 text-accent hover:text-red-500" />
+          </button>
+        </div>
+      ),
+    },
+  ];
+
+  return (
+    <div>
+      <PFTable columns={columns} data={projects || []} />
+      <TablePagination totalPage={meta?.totalPage} />
+      {/* Update Project Modal */}
+
+      {updateModalOpen && selectedProject && (
+        <UpdateProjectModal
+          project={selectedProject} // Fix: Passing correct prop name
+          onClose={() => setUpdateModalOpen(false)}
+          router={router}
+        />
+      )}
+
+      {/* Deleted Project Modal */}
+      <ProjectDeleteModal
+        title={selectedItem}
+        isOpen={isModalOpen}
+        onOpenChange={setModalOpen}
+        onConfirm={handleDeleteConfirm}
+      />
+    </div>
   );
 };
 

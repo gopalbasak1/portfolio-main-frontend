@@ -12,6 +12,9 @@ import {
   SelectValue,
 } from "../ui/select";
 import { ScrollArea } from "../ui/scroll-area";
+import PFImageUploader from "../ui/core/PFImageUploader";
+import ImagePreviewer from "../ui/core/PFImageUploader/ImagePreviewer";
+import { updateProjectByAdmin } from "@/services/project";
 
 interface Project {
   _id: string;
@@ -21,7 +24,7 @@ interface Project {
   github: string;
   category: string;
   stack: { name: string }[];
-  image: string;
+  imageUrls: string[];
 }
 
 interface UpdateProjectModalProps {
@@ -52,8 +55,11 @@ const UpdateProjectModal: React.FC<UpdateProjectModalProps> = ({
   const [stack, setStack] = useState(
     project.stack?.map((s) => s.name).join(", ") || ""
   );
-  const [image, setImage] = useState<File | null>(null);
 
+  const [imageFiles, setImageFiles] = useState<File[] | []>([]);
+  const [imagePreview, setImagePreview] = useState<string[]>(
+    project.imageUrls || []
+  );
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
 
@@ -76,61 +82,50 @@ const UpdateProjectModal: React.FC<UpdateProjectModalProps> = ({
 
     try {
       setLoading(true);
-      let imageUrl = project.image;
 
-      if (image) {
-        const formData = new FormData();
-        formData.append("file", image);
-        formData.append(
-          "upload_preset",
-          `${process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}`
-        );
+      // Convert stack string into an array
+      const stackArray = stack
+        .split(",")
+        .map((tech) => ({ name: tech.trim() }))
+        .filter((tech) => tech.name !== "");
 
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_CLOUDINARY_API_URL}`,
-          {
-            method: "POST",
-            body: formData,
-          }
-        );
-
-        const data = await res.json();
-        if (!res.ok) {
-          throw new Error("Image upload failed");
-        }
-        imageUrl = data.secure_url;
+      if (stackArray.length === 0) {
+        toast.error("At least one stack technology is required.");
+        setLoading(false);
+        return;
       }
 
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/projects/${project._id}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            title,
-            description,
-            liveLink,
-            github,
-            category,
-            stack: stack.split(",").map((s) => ({ name: s.trim() })),
-            image: imageUrl,
-          }),
-        }
-      );
+      // Ensure image URLs exist
+      const imageUrls = imagePreview.length > 0 ? imagePreview : [];
 
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.message || "Failed to update project");
+      // Construct data object from state values
+      const formattedData = {
+        title,
+        description,
+        liveLink,
+        github,
+        category,
+        stack: stackArray,
+        imageUrls,
+      };
+
+      console.log("📤 Sending Data:", formattedData);
+
+      const res = await updateProjectByAdmin(formattedData, project._id);
+      console.log(res);
+      if (res.success) {
+        toast.success("Project updated successfully!");
+        router.push(
+          `${process.env.NEXT_PUBLIC_FRONTEND_URL}/admin/dashboard/project/allProject`
+        );
+        router.refresh();
+        onClose();
+      } else {
+        toast.error(`Error: ${res.message}`);
       }
-
-      toast.success("Project updated successfully!");
-      onClose(); // Close modal after update
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      router.refresh();
     } catch (error: any) {
-      toast.error(error.message || "Something went wrong while updating.");
+      console.error("Update Error:", error);
+      toast.error("Something went wrong!");
     } finally {
       setLoading(false);
     }
@@ -142,8 +137,8 @@ const UpdateProjectModal: React.FC<UpdateProjectModalProps> = ({
       animate={{ opacity: 1, transition: { duration: 0.3 } }}
       className="fixed inset-0 bg-[#111827] bg-opacity-50 flex justify-center items-center px-4"
     >
-      <ScrollArea className="h-[700px] rounded-xl border p-2 bg-[#181818]">
-        <div className="bg-[#111827] p-6 rounded-xl w-full max-w-lg shadow-lg max-h-[90vh] ">
+      <ScrollArea className="h-[500px] rounded-xl w-[700px] mx-auto  p-2 bg-[#181818] md:ml-[260px] lg:ml-[300px] xl:ml-[550px] scroll-red border-2 border-red-500">
+        <div className="bg-[#111827] p-6 rounded-xl shadow-lg   ">
           <h2 className="text-white text-2xl font-bold mb-4 text-center">
             Update Project
           </h2>
@@ -233,18 +228,26 @@ const UpdateProjectModal: React.FC<UpdateProjectModalProps> = ({
 
             {/* Image Upload */}
             <div>
-              <label className="text-white">Upload New Image</label>
-              <Input
-                type="file"
-                className="w-full p-2  text-white rounded-xl bg-[#181818]"
-                accept="image/*"
-                onChange={(e) => {
-                  if (e.target.files && e.target.files.length > 0) {
-                    setImage(e.target.files[0]); // Now TypeScript knows it's safe
-                  }
-                }}
-              />
+              <div className="my-2">
+                <p className="">Images </p>
+              </div>
+              <div className="">
+                <PFImageUploader
+                  setImageFiles={setImageFiles}
+                  setImagePreview={setImagePreview}
+                  label="Upload Image"
+                  className=""
+                />
+                <ImagePreviewer
+                  className="grid md:grid-cols-2 lg:grid-cols-3  mt-5 gap-4"
+                  setImageFiles={setImageFiles}
+                  imagePreview={imagePreview}
+                  setImagePreview={setImagePreview}
+                />
+              </div>
             </div>
+
+            {/*  */}
           </div>
 
           {/* Buttons */}

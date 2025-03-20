@@ -6,7 +6,7 @@ export interface Project {
   github: string;
   category: string;
   stack: { name: string }[];
-  image: string;
-  user?: { name?: string; image?: string };
+  imageUrls: string[];
+  user?: { name?: string; imageUrls: string[] };
   createdAt: string;
 }
