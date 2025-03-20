@@ -2,8 +2,8 @@ export interface Blog {
   _id: string;
   title: string;
   content: string;
-  image: string;
+  imageUrls: string[];
   category: string;
   createdAt: string;
-  user?: { name?: string; image?: string };
+  user?: { name?: string; imageUrls?: string[] | undefined };
 }

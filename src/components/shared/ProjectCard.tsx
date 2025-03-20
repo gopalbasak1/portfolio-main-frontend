@@ -18,7 +18,7 @@ interface Project {
   title: string;
   description: string;
   stack: { name: string }[];
-  image: string;
+  imageUrls: string[];
   liveLink?: string;
   github?: string;
   createdAt?: string;
@@ -30,14 +30,15 @@ type SliderProjectProps = {
 };
 
 const ProjectCard = ({ projects }: SliderProjectProps) => {
+  console.log(projects);
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-      {projects?.data?.slice(3).map((project) => (
+      {projects?.data?.slice(0, 3).map((project) => (
         <div key={project._id}>
           <div className="w-full shadow-md overflow-hidden border-2 border-white/20 rounded-xl">
             <figure>
               <Image
-                src={project?.image}
+                src={project.imageUrls?.[0] || "/placeholder.jpg"}
                 width={600}
                 height={100}
                 alt="project image"

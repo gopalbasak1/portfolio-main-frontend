@@ -11,6 +11,7 @@ import SkillPage from "@/components/shared/SkillPage";
 import Link from "next/link";
 import HomeProjectCard from "@/components/shared/HomeProjectCard";
 import { Project } from "@/types";
+import { getAllProjectsByAdmin } from "@/services/project";
 
 // const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
@@ -63,7 +64,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 const HomePage = async () => {
-  // const projects = await fetchProjects();
+  const { data } = await getAllProjectsByAdmin();
 
   return (
     <section className="h-full">
@@ -123,9 +124,15 @@ const HomePage = async () => {
         </h2>
         <hr className="border-t-2 border-transparent bg-gradient-to-r from-white/20 to-[#6dc5a2] animate-pulse h-1" />
         <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-10">
-          {/* {projects?.data?.slice(0, 3)?.map((project: Project) => (
-            <HomeProjectCard key={project._id} project={project} />
-          ))} */}
+          {data?.length > 0 ? (
+            data
+              .slice(0, 3)
+              .map((project: Project) => (
+                <HomeProjectCard key={project._id} project={project} />
+              ))
+          ) : (
+            <p className="text-center text-gray-500">No projects available.</p>
+          )}
         </div>
       </div>
 

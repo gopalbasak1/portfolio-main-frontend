@@ -19,7 +19,7 @@ const HomeProjectCard = ({ project }: { project: Project }) => {
         <div className="w-full shadow-md overflow-hidden border-2 border-white/20 rounded-xl">
           <figure>
             <Image
-              src={project?.image}
+              src={project?.imageUrls[0]}
               width={600}
               height={100}
               alt="project image"

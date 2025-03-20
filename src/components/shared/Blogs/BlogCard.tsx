@@ -17,7 +17,7 @@ const BlogCard = ({ blog }: { blog: Blog }) => {
     <div className="w-full shadow-md overflow-hidden border-2 border-white/20 rounded-xl h-[550px]">
       <figure className="h-64">
         <Image
-          src={blog?.image}
+          src={blog?.imageUrls[0]}
           width={600}
           height={100}
           alt="blog image"

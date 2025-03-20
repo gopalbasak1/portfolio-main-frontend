@@ -21,7 +21,7 @@ const LatestBlogCard = ({ blog }: LatestBlogCardProps) => {
       {/* Blog Image */}
       <div className="relative w-full h-56">
         <Image
-          src={blog.image}
+          src={blog.imageUrls[0]}
           alt={blog.title}
           fill
           className="object-cover transition-transform duration-300 hover:scale-105"
@@ -72,7 +72,7 @@ const LatestBlogCard = ({ blog }: LatestBlogCardProps) => {
           <div className="flex items-center space-x-2">
             <div className="w-12 h-12 relative">
               <Image
-                src={blog?.user?.image || "/default-avatar.png"}
+                src={blog?.user?.imageUrls?.[0] || "/default-avatar.png"}
                 alt={blog?.user?.name || ""}
                 fill
                 className="rounded-full object-cover hover:border-2 hover:border-accent"

@@ -26,7 +26,7 @@ import { useTypewriter } from "react-simple-typewriter";
 interface Project {
   user: {
     name: string;
-    image: string;
+    imageUrls: string[];
   };
   _id: string;
   num?: string;
@@ -34,7 +34,7 @@ interface Project {
   title: string;
   description: string;
   stack: { name: string }[];
-  image: string;
+  imageUrls: string[];
   liveLink?: string;
   github?: string;
 }
@@ -112,7 +112,7 @@ const SliderProject = ({ projects }: SliderProjectProps) => {
 
               <div className="flex items-center gap-4  p-3 rounded-lg">
                 <Image
-                  src={project?.user?.image || "/default-user.png"} // Add fallback image
+                  src={project?.user?.imageUrls[0] || "/default-user.png"} // Add fallback image
                   alt={project?.user?.name || "User"}
                   width={50}
                   height={50}
@@ -195,7 +195,7 @@ const SliderProject = ({ projects }: SliderProjectProps) => {
                   <div className="h-[650px] relative group flex justify-center items-center bg-pink-50/20 rounded-xl">
                     <div className="relative w-full h-full rounded-xl">
                       <Image
-                        src={proj.image}
+                        src={proj.imageUrls[0]}
                         fill
                         className="object-cover rounded-xl"
                         alt={proj.title}

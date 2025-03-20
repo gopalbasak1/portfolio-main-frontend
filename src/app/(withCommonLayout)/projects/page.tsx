@@ -1,28 +1,30 @@
+"use server";
 import ProjectCard from "@/components/shared/ProjectCard";
 import SliderProject from "@/components/shared/SliderProject";
+import { getAllProjectsByAdmin } from "@/services/project";
 import { Metadata } from "next";
 
-const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+// const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-// 🟢 Fetch projects from backend
-const fetchProjects = async () => {
-  try {
-    const res = await fetch(`${API_URL}/projects`, { cache: "no-store" });
-    if (!res.ok) throw new Error("Failed to fetch projects");
-    return res.json();
-  } catch (error) {
-    console.error(error);
-    return { data: [] }; // Return empty array if fetch fails
-  }
-};
+// // 🟢 Fetch projects from backend
+// const fetchProjects = async () => {
+//   try {
+//     const res = await fetch(`${API_URL}/projects`, { cache: "no-store" });
 
-// 🟢 Generate metadata dynamically based on project data
-export const metadata: Metadata = {
-  title: "Gopal Basak | Projects",
-  description: "Explore my latest projects in React, Next.js, and TypeScript.",
-  keywords:
-    "React, Next.js, MERN Stack, TypeScript, JavaScript, Web Development",
-};
+//     return res.json();
+//   } catch (error) {
+//     console.error(error);
+//     return { data: [] }; // Return empty array if fetch fails
+//   }
+// };
+
+// // 🟢 Generate metadata dynamically based on project data
+// export const metadata: Metadata = {
+//   title: "Gopal Basak | Projects",
+//   description: "Explore my latest projects in React, Next.js, and TypeScript.",
+//   keywords:
+//     "React, Next.js, MERN Stack, TypeScript, JavaScript, Web Development",
+// };
 
 // const firstProject = projects.data[0]; // Get first project as reference
 
@@ -56,15 +58,17 @@ export const metadata: Metadata = {
 
 // 🟢 Projects Page Component
 const Projects = async () => {
-  const projects = await fetchProjects();
+  const { data } = await getAllProjectsByAdmin();
+  // console.log(data);
 
   return (
     <div className="h-auto my-20">
       <div>
-        <SliderProject projects={projects} />
+        <SliderProject projects={{ data }} />
       </div>
+
       <div className="container mx-auto mt-10 md:mt-36 h-auto">
-        <ProjectCard projects={projects} />
+        <ProjectCard projects={{ data }} />
       </div>
     </div>
   );
