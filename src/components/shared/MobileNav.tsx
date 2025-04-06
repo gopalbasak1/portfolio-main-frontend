@@ -1,22 +1,27 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
 import { CiMenuFries } from "react-icons/ci";
 import Link from "next/link";
-import { signOut } from "next-auth/react";
 import Image from "next/image";
 import { IUser } from "@/types";
 import { useUser } from "@/context/UserContext";
 import { logout } from "@/services/AuthService";
+import { protectedRoutes } from "@/contants";
 
 const MobileNav = () => {
   const pathname = usePathname();
   const { user, setIsLoading } = useUser();
 
-  const handleLogout = async () => {
+  const router = useRouter();
+
+  const handleLogOut = () => {
     logout();
     setIsLoading(true);
+    if (protectedRoutes.some((route) => pathname.match(route))) {
+      router.push("/");
+    }
   };
 
   const links = [
@@ -77,7 +82,7 @@ const MobileNav = () => {
                 </Link>
               )}
               <button
-                onClick={handleLogout}
+                onClick={handleLogOut}
                 className="mt-4 text-red-500 text-lg hover:text-red-400 transition-all"
               >
                 Logout

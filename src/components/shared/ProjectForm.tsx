@@ -94,7 +94,7 @@ const ProjectForm = () => {
         stack: stackArray,
       };
 
-      console.log("📤 Sending Data:", formattedData);
+      // console.log("📤 Sending Data:", formattedData);
       const res = await addProject(formattedData);
 
       if (res.success) {

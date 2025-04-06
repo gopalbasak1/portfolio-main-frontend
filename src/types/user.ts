@@ -9,4 +9,5 @@ export interface IUser {
   iat?: number;
   exp?: number;
   status: "active" | "blocked";
+  createdAt?: Date;
 }

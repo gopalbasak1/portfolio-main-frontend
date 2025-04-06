@@ -9,7 +9,7 @@ const AllProject = async ({
 }) => {
   const { page } = await searchParams;
   const { data, meta } = await getAllProjectsByAdmin(page);
-  console.log(data, meta);
+  //console.log(data, meta);
 
   return (
     <div className="p-4 min-h-screen text-white">

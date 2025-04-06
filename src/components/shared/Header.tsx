@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { signOut } from "next-auth/react";
 import Nav from "./Nav";
 import MobileNav from "./MobileNav";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
@@ -11,15 +10,22 @@ import { Button } from "../ui/button";
 import ThemeToggle from "@/app/theme-toggle";
 import { useUser } from "@/context/UserContext";
 import { logout } from "@/services/AuthService";
+import { usePathname, useRouter } from "next/navigation";
+import { protectedRoutes } from "@/contants";
 
 const Header = () => {
   // const isAuthenticated = !!session;
   const { user, setIsLoading } = useUser();
-  console.log(user);
+  // console.log(user);
+  const pathname = usePathname();
+  const router = useRouter();
 
   const handleLogOut = () => {
     logout();
     setIsLoading(true);
+    if (protectedRoutes.some((route) => pathname.match(route))) {
+      router.push("/login");
+    }
   };
 
   return (

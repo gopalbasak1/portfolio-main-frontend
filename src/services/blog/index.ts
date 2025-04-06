@@ -116,3 +116,26 @@ export const updateBlogByAdmin = async (blogData: any, blogId: string) => {
     console.error("Fetch Error:", error);
   }
 };
+
+export const getSingleBlog = async (blogId: string) => {
+  const accessToken = (await cookies()).get("accessToken")?.value || "";
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/blogs/${blogId}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: accessToken, // Fix undefined error
+          "Content-Type": "application/json",
+        },
+        next: {
+          tags: ["BLOG"],
+        },
+      }
+    );
+    const data = await res.json();
+    return data;
+  } catch (error: any) {
+    return Error(error.message);
+  }
+};

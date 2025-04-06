@@ -5,15 +5,13 @@ import Image from "next/image";
 import { useTypewriter } from "react-simple-typewriter";
 
 const BlogDetails = ({ blog }: { blog: Blog }) => {
-  const { title, content, image, category, createdAt } = blog;
-
-  //console.log(category);
+  // const { title, content, imageUrls, category, createdAt } = blog;
 
   const [typeEffect] = useTypewriter({
-    words: [category],
+    words: [blog?.category],
     loop: true,
-    typeSpeed: 200,
-    delaySpeed: 100,
+    typeSpeed: 700,
+    delaySpeed: 200,
   });
 
   //console.log(typeEffect);
@@ -25,10 +23,10 @@ const BlogDetails = ({ blog }: { blog: Blog }) => {
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Mobile: Image at top; Desktop: Image on right */}
         <div className="lg:hidden">
-          {image ? (
+          {blog?.imageUrls[0] ? (
             <Image
-              src={image}
-              alt={title}
+              src={blog?.imageUrls[0]}
+              alt={blog?.title}
               width={800}
               height={450}
               className="w-full h-auto object-cover rounded-xl mb-4"
@@ -48,22 +46,22 @@ const BlogDetails = ({ blog }: { blog: Blog }) => {
                 {typeEffect}
               </div>
               <h1 className="text-xm font-bold text-white capitalize">
-                {title}
+                {blog?.title}
               </h1>
               <div className="flex gap-4 items-center text-xm text-gray-500">
                 <p>Publishing:</p>
                 <div className="underline">
-                  {dayjs(createdAt).format("MM-DD-YY")}
+                  {dayjs(blog?.createdAt).format("MM-DD-YY")}
                 </div>
               </div>
 
               <div className="flex items-center gap-4  p-3 rounded-lg">
                 <Image
-                  src={blog?.user?.image || "/default-user.png"} // Add fallback image
+                  src={blog?.user?.imageUrls?.[0] || "/default-user.png"} // Add fallback image
                   alt={blog?.user?.name || "User"}
                   width={50}
                   height={50}
-                  className="rounded-full border-2 border-accent shadow-lg h-20 w-20"
+                  className="rounded-full border-2 border-accent shadow-lg h-[50px] w-[50px]"
                 />
                 <div className="flex flex-col">
                   <span className="text-lg font-semibold text-white">
@@ -79,10 +77,10 @@ const BlogDetails = ({ blog }: { blog: Blog }) => {
 
           {/* Desktop: Image Section */}
           <div className="hidden lg:block w-full lg:w-1/2">
-            {image ? (
+            {blog?.imageUrls[0] ? (
               <Image
-                src={image}
-                alt={title}
+                src={blog?.imageUrls[0]}
+                alt={blog?.title ?? "Blog Image"}
                 width={800}
                 height={450}
                 className="w-full h-auto object-cover rounded-xl"
@@ -97,9 +95,10 @@ const BlogDetails = ({ blog }: { blog: Blog }) => {
       </div>
 
       {/* Description Section */}
-      <div className="mt-8">
-        <p className="text-white/80 text-justify">{content}</p>
-      </div>
+      <div
+        className="prose prose-invert max-w-none text-white/80 my-10"
+        dangerouslySetInnerHTML={{ __html: blog?.content || "" }}
+      ></div>
     </div>
   );
 };

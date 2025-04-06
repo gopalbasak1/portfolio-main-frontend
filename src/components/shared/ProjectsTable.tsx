@@ -8,7 +8,7 @@ import { useState } from "react";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import Image from "next/image";
 import UpdateProjectModal from "./UpdateProjectModal";
-import { IMeta, Project } from "@/types";
+import { IMeta, TProject } from "@/types";
 
 import { ColumnDef } from "@tanstack/react-table";
 import { PFTable } from "../ui/core/PFTable";
@@ -21,19 +21,19 @@ const ProjectsTable = ({
   projects,
   meta,
 }: {
-  projects: Project[];
+  projects: TProject[];
   meta: IMeta;
 }) => {
   // console.log(projects);
   const router = useRouter();
 
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [selectedProject, setSelectedProject] = useState<TProject | null>(null);
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
   const [updateModalOpen, setUpdateModalOpen] = useState(false);
 
-  const handleDelete = (data: Project) => {
+  const handleDelete = (data: TProject) => {
     console.log(data);
     setSelectedIds([data?._id]);
     setSelectedItem(data?.title);
@@ -57,12 +57,12 @@ const ProjectsTable = ({
     }
   };
 
-  const handleUpdate = (project: Project) => {
+  const handleUpdate = (project: TProject) => {
     setSelectedProject(project);
     setUpdateModalOpen(true);
   };
 
-  const columns: ColumnDef<Project>[] = [
+  const columns: ColumnDef<TProject>[] = [
     {
       id: "sl",
       header: "Sl No.",

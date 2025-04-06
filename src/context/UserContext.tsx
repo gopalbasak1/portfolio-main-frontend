@@ -24,7 +24,7 @@ const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
   const handleUser = async () => {
     const user = await getCurrentUser();
-    console.log("Fetched user from API:", user); // Debugging
+    // console.log("Fetched user from API:", user)
     setUser(user);
     setIsLoading(false);
   };

@@ -16,6 +16,14 @@ import {
 import ImagePreviewer from "../ui/core/PFImageUploader/ImagePreviewer";
 import PFImageUploader from "../ui/core/PFImageUploader";
 import { addBlog } from "@/services/blog";
+import { EditorContent, useEditor } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import { useEffect } from "react";
+// or wherever it is
+
+import Highlight from "@tiptap/extension-highlight";
+import TextAlign from "@tiptap/extension-text-align";
+import MenuBar from "./editor/menu-bar";
 
 export type BlogData = {
   title?: string | null;
@@ -28,33 +36,86 @@ const BlogForm = () => {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<BlogData>();
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const [imageFiles, setImageFiles] = useState<File[] | []>([]);
   const [imagePreview, setImagePreview] = useState<string[] | []>([]);
+
+  //* Text Editor
+  const editor = useEditor({
+    extensions: [
+      StarterKit.configure({
+        bulletList: {
+          HTMLAttributes: {
+            class: "list-disc ml-3",
+          },
+        },
+        orderedList: {
+          HTMLAttributes: {
+            class: "list-decimal ml-3",
+          },
+        },
+      }),
+      Highlight,
+      TextAlign.configure({
+        types: ["heading", "paragraph"],
+      }),
+    ],
+    content: "",
+    editorProps: {
+      attributes: {
+        class: "min-h-[156px] rounded-md py-2 px-5  bg-white/40",
+      },
+    },
+    onUpdate: ({ editor }) => {
+      console.log(editor.getHTML());
+    },
+  });
+
+  useEffect(() => {
+    register("content", {
+      required: "Content is required",
+    });
+  }, [register]);
+
+  useEffect(() => {
+    if (!editor) return undefined;
+
+    const updateContent = () => {
+      const html = editor.getHTML();
+      setValue("content", html, { shouldValidate: true });
+    };
+
+    editor.on("update", updateContent);
+    return () => {
+      editor.off("update", updateContent);
+    };
+  }, [editor, setValue]);
+
   const onSubmit = async (data: BlogData) => {
     try {
       setLoading(true);
 
+      //* Force update content before submission
+      if (editor) {
+        data.content = editor.getHTML();
+      }
+
       const formattedData = {
         ...data,
         imageUrls: imagePreview,
-        // Or session ID if available
       };
-      console.log(formattedData);
 
-      // Pass token to the server function
       const res = await addBlog(formattedData);
-      //console.log("djd", res);
       if (res.success) {
         toast.success(res.message);
         router.push(
           `${process.env.NEXT_PUBLIC_FRONTEND_URL}/admin/dashboard/blog/allBlog`
         );
       }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error(error.message);
       toast.error(error.message);
@@ -72,9 +133,9 @@ const BlogForm = () => {
       }}
       className="py-6 "
     >
-      <div className="container mx-auto flex justify-center bg-none">
-        <div className="w-full max-w-md p-10 rounded-xl shadow-lg">
-          <h3 className="text-4xl text-accent text-center mb-6">
+      <div className="w-full mx-auto flex justify-center bg-none">
+        <div className="w-[600px]  mx-auto p-10 rounded-xl shadow-lg">
+          <h3 className="text-4xl text-accent text-center mb-6 ">
             Create Your Blog
           </h3>
           <p className="text-red-500 text-[14px] font-bold text-center my-2 underline">
@@ -123,15 +184,22 @@ const BlogForm = () => {
               )}
             </div>
 
-            <Textarea
-              className="rounded-xl w-full h-48 bg-[#181818]"
-              id="content"
-              {...register("content", { required: true })}
-              placeholder="Blog Content"
-            />
-            {errors.content && (
-              <p className="text-red-500">Content is required</p>
-            )}
+            {/* Tiptap Editor */}
+            <div className="rounded-xl p-4  border-none mx-auto ">
+              {editor ? (
+                <>
+                  <MenuBar editor={editor} />
+                  <EditorContent
+                    editor={editor}
+                    className=" 
+                    bg-[#282626]
+                    text-black    border-transparent rounded-lg focus:outline-none "
+                  />
+                </>
+              ) : (
+                "Loading editor..."
+              )}
+            </div>
 
             <Button
               type="submit"

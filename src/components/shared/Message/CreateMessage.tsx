@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Session } from "next-auth";
+import { sendMessage } from "@/services/message";
 
 const info = [
   {
@@ -20,29 +21,29 @@ const info = [
   {
     icon: <FaEnvelope />,
     title: "Email",
-    description: "gopalbasak2324@gmail.com",
+    description: (
+      <a
+        href="mailto:gopalbasak2324@gmail.com"
+        className="hover:underline hover:text-accent"
+      >
+        gopalbasak2324@gmail.com
+      </a>
+    ),
   },
   {
     icon: <FaMapMarkedAlt />,
     title: "Address",
-    description: "Brottrish, Kishoreganj, Bangladesh - 2300",
+    description: "Kishoreganj, Bangladesh - 2300",
   },
 ];
 
-type CustomSession = Omit<Session, "user"> & {
-  user: {
-    id: string;
-    accessToken: string;
-  } & Session["user"];
-};
-
-const CreateMessage = ({ session }: { session: CustomSession | null }) => {
+const CreateMessage = () => {
   // State for form data
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     message: "",
-    userId: session?.user?.id || "",
+    phoneNumber: "",
   });
 
   // State for loading & response message
@@ -63,34 +64,19 @@ const CreateMessage = ({ session }: { session: CustomSession | null }) => {
     setResponseMessage("");
 
     try {
-      // Get token from localStorage or cookie
-      const token = session?.user?.accessToken; // Adjust this based on where you store it
-
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/messages/send-message`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `${token}`, // Attach the token
-          },
-          body: JSON.stringify(formData),
-        }
-      );
-
-      const data = await response.json();
-
-      if (response.ok) {
+      const response = await sendMessage(formData);
+      console.log(response);
+      if (response.success) {
         setResponseMessage("Message sent successfully!");
-        toast.success(data?.message);
+        toast.success(response?.message);
         setFormData({
           name: "",
           email: "",
           message: "",
-          userId: session?.user?.id || "",
+          phoneNumber: "",
         });
       } else {
-        toast.error(data?.message);
+        toast.error(response?.message);
       }
     } catch (error: any) {
       console.error("Error sending message:", error);
@@ -147,6 +133,15 @@ const CreateMessage = ({ session }: { session: CustomSession | null }) => {
                     required
                   />
                 </div>
+                <Input
+                  className="rounded-xl bg-[#181818]"
+                  type="phoneNumber"
+                  name="phoneNumber"
+                  placeholder="Phone Number"
+                  value={formData.phoneNumber}
+                  onChange={handleChange}
+                  required
+                />
 
                 {/* Textarea */}
                 <Textarea

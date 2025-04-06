@@ -78,7 +78,6 @@ const BlogsTable = ({ blogs, meta }: BlogsTableProps) => {
           <tr>
             <th className="px-4 py-2 border border-gray-700">SL</th>
             <th className="px-4 py-2 border border-gray-700">Title</th>
-            <th className="px-4 py-2 border border-gray-700">Content</th>
             <th className="px-4 py-2 border border-gray-700">Category</th>
             <th className="px-4 py-2 border border-gray-700">Image</th>
             <th className="px-4 py-2 border border-gray-700">Details</th>
@@ -97,11 +96,7 @@ const BlogsTable = ({ blogs, meta }: BlogsTableProps) => {
                   ? blog.title.slice(0, 20) + "..."
                   : blog.title}
               </td>
-              <td className="px-4 py-2 border border-gray-600">
-                {blog.content.length > 10
-                  ? blog.content.slice(0, 25) + "..."
-                  : blog.content}
-              </td>
+
               <td className="px-4 py-2 border border-gray-600">
                 {blog.category}
               </td>

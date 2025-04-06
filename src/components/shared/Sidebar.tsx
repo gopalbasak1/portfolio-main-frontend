@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { FaHome, FaSignOutAlt, FaBars, FaTimes } from "react-icons/fa";
 import { LuLayoutDashboard } from "react-icons/lu";
 import { MdOutlineCreateNewFolder } from "react-icons/md";
@@ -11,11 +11,15 @@ import ThemeToggle from "@/app/theme-toggle";
 import { MdAddChart } from "react-icons/md";
 import { LuUsersRound } from "react-icons/lu";
 import { logout } from "@/services/AuthService";
+import { useUser } from "@/context/UserContext";
+import { protectedRoutes } from "@/contants";
+import { set } from "date-fns";
 
 const Sidebar = () => {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
-
+  const { user, setIsLoading } = useUser();
+  const router = useRouter();
   // Prevent scrolling when sidebar is open
   useEffect(() => {
     if (isOpen) {
@@ -32,6 +36,16 @@ const Sidebar = () => {
     if (path === "/") return pathname === "/";
     if (path === "/dashboard") return pathname === "/dashboard";
     return pathname.startsWith(path);
+  };
+
+  const handleLogout = () => {
+    logout();
+    setIsLoading(true);
+    setIsOpen(false);
+
+    if (protectedRoutes.some((route) => pathname.match(route))) {
+      router.push("/login");
+    }
   };
 
   return (
@@ -197,8 +211,7 @@ const Sidebar = () => {
 
         <button
           onClick={() => {
-            setIsOpen(false);
-            logout();
+            handleLogout();
           }}
           className="flex items-center space-x-2 text-red-400 hover:text-red-600 p-2 rounded-xl hover:underline mt-4"
         >

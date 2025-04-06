@@ -1,21 +1,22 @@
 import BlogDetails from "@/components/shared/Blogs/BlogDetails";
+import { getSingleBlog } from "@/services/blog";
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id } = await params;
+// export async function generateMetadata({
+//   params,
+// }: {
+//   params: Promise<{ id: string }>;
+// }) {
+//   const { id } = await params;
 
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/blogs/${id}`);
+//   const res = await getSingleBlog(id);
 
-  const blog = await res.json();
+//   console.log(res);
 
-  return {
-    title: `Blog Details- ${blog?.data?.title}` || "Blog Details",
-    description: blog?.data?.description || "Blog description not available",
-  };
-}
+//   return {
+//     title: `Blog Details- ${blog?.data?.title}` || "Blog Details",
+//     description: blog?.data?.description || "Blog description not available",
+//   };
+// }
 
 const BlogDetailsPage = async ({
   params,
@@ -23,18 +24,11 @@ const BlogDetailsPage = async ({
   params: Promise<{ id: string }>;
 }) => {
   const { id } = await params;
-  //console.log(id);
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BACKEND_URL}/blogs/${id}`,
-    {
-      cache: "no-store",
-    }
-  );
-  const blogData = await res.json();
+  const { data: blog } = await getSingleBlog(id);
+  //console.log(blog);
+  // const blog = blogData.data;
 
-  const blog = blogData.data;
-
-  console.log(blogData);
+  // console.log(blogData);
   return (
     <div>
       <BlogDetails blog={blog} />

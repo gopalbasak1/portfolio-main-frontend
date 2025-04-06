@@ -1,5 +1,6 @@
+"use client";
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { Input } from "../ui/input";
@@ -7,6 +8,11 @@ import { Textarea } from "../ui/textarea";
 import { updateBlogByAdmin } from "@/services/blog";
 import PFImageUploader from "../ui/core/PFImageUploader";
 import ImagePreviewer from "../ui/core/PFImageUploader/ImagePreviewer";
+import { EditorContent, useEditor } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import TextAlign from "@tiptap/extension-text-align";
+import Highlight from "@tiptap/extension-highlight";
+import MenuBar from "./editor/menu-bar";
 
 interface Blog {
   _id: string;
@@ -36,9 +42,52 @@ const UpdateBlogModal: React.FC<UpdateBlogModalProps> = ({
   );
   const [loading, setLoading] = useState(false);
 
+  //* Text Editor
+  const editor = useEditor({
+    extensions: [
+      StarterKit.configure({
+        bulletList: {
+          HTMLAttributes: {
+            class: "list-disc ml-3",
+          },
+        },
+        orderedList: {
+          HTMLAttributes: {
+            class: "list-decimal ml-3",
+          },
+        },
+      }),
+      Highlight,
+      TextAlign.configure({
+        types: ["heading", "paragraph"],
+      }),
+    ],
+    content: blog.content,
+    editorProps: {
+      attributes: {
+        class: "min-h-[156px] w-full mx-auto rounded-lg py-2 px-5  bg-white/40",
+      },
+    },
+    onUpdate: ({ editor }) => {
+      console.log(editor.getHTML());
+    },
+  });
+
+  useEffect(() => {
+    if (!editor) return undefined;
+    const updateContent = () => {
+      setContent(editor.getHTML());
+    };
+    editor.on("update", updateContent);
+    return () => {
+      editor.off("update", updateContent);
+    };
+  }, [editor]);
+
   const handleUpdate = async () => {
     try {
       setLoading(true);
+
       // Ensure image URLs exist
       const imageUrls = imagePreview.length > 0 ? imagePreview : [];
 
@@ -71,9 +120,9 @@ const UpdateBlogModal: React.FC<UpdateBlogModalProps> = ({
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1, transition: { duration: 0.3 } }}
-      className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center"
+      className="fixed inset-0  bg-opacity-50 flex justify-center items-center container mx-auto"
     >
-      <div className="bg-[#111827]  p-6 rounded-xl w-96 shadow-lg space-y-5">
+      <div className="bg-[#111827]  p-6 rounded-xl shadow-lg space-y-5 max-h-[70vh] overflow-y-auto border border-accent md:w-[480px] lg:w-[800px] md:ml-[275px] mx-2">
         <h2 className="text-white text-2xl font-bold mb-4 text-center">
           Update Blog
         </h2>
@@ -101,23 +150,13 @@ const UpdateBlogModal: React.FC<UpdateBlogModalProps> = ({
         </div>
 
         <div>
-          <label className="text-white">Blog Content *</label>
-          <Textarea
-            className="w-full p-2 mb-2 bg-[#1c1c22] text-white rounded-xl"
-            placeholder="Blog Content"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-          />
-        </div>
-
-        <div>
           <div className="flex gap-4 ">
             {imagePreview?.length > 0 ? (
               <ImagePreviewer
                 setImageFiles={setImageFiles}
                 imagePreview={imagePreview}
                 setImagePreview={setImagePreview}
-                className="ml-[35px]"
+                className="ml-[20px] md:ml-[50px] lg:ml-[150px]"
               />
             ) : (
               <PFImageUploader
@@ -129,7 +168,24 @@ const UpdateBlogModal: React.FC<UpdateBlogModalProps> = ({
           </div>
         </div>
 
-        <div className="flex justify-end gap-3">
+        <div className="">
+          <label className="text-white">Blog Content *</label>
+          {editor ? (
+            <>
+              <MenuBar editor={editor} />
+              <EditorContent
+                editor={editor}
+                className=" 
+                    bg-[#282626]
+                    text-black    border-transparent rounded-xl focus:outline-none "
+              />
+            </>
+          ) : (
+            "Loading editor..."
+          )}
+        </div>
+
+        <div className="flex justify-end gap-3 pt-10">
           <button
             onClick={onClose}
             className="bg-gray-600 text-white px-4 py-2 rounded-xl hover:bg-red-400"

@@ -269,3 +269,26 @@ export const getSingleRental = async (rentalId: string) => {
     return Error(error.message);
   }
 };
+
+export const getSingleProject = async (projectId: string) => {
+  const accessToken = (await cookies()).get("accessToken")?.value || "";
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/projects/${projectId}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: accessToken, // Fix undefined error
+          "Content-Type": "application/json",
+        },
+        next: {
+          tags: ["PROJECT"],
+        },
+      }
+    );
+    const data = await res.json();
+    return data;
+  } catch (error: any) {
+    return Error(error.message);
+  }
+};

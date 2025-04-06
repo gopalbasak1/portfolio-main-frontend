@@ -72,7 +72,7 @@ const HomePage = async () => {
         <div className="flex flex-col xl:flex-row items-center justify-between xl:pt-8 xl:pb-24">
           {/* text */}
           <div className="text-center xl:text-left order-2 xl:order-none">
-            <span className="text-xl font-bold">React Developer</span>
+            <span className="text-xl font-bold">Mern Developer</span>
             <h1 className="h1 mb-6">
               Hello I'm <br /> <span className="text-accent">Gopal Basak</span>
             </h1>
