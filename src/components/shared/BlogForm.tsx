@@ -173,7 +173,7 @@ const BlogForm = () => {
                   setImageFiles={setImageFiles}
                   imagePreview={imagePreview}
                   setImagePreview={setImagePreview}
-                  className="ml-[53px]"
+                  className="ml-[30px] md:ml-[62px] lg:ml-[120px]"
                 />
               ) : (
                 <PFImageUploader

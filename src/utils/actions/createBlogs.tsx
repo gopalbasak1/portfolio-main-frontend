@@ -47,7 +47,7 @@ export const createBlog = async (
     title: data?.title, // ✅ Ensure it's a string
     content: data?.content, // ✅ Ensure it's a string
     category: data?.category, // ✅ Ensure it's a string
-    image: data?.image || "", // ✅ Ensure image URL is a string
+    image: data?.imageUrls || "", // ✅ Ensure image URL is a string
     userId: userId,
   };
 

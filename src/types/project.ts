@@ -1,6 +1,6 @@
 export interface Project {
   _id: string;
-  title?: string;
+  title: string;
   description: string; // Ensure it's always a string (remove `| undefined`)
   liveLink: string;
   github: string;

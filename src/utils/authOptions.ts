@@ -46,20 +46,20 @@ export const authOptions: NextAuthOptions = {
     signIn: "/login",
   },
   secret: process.env.NEXTAUTH_SECRET,
-  callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id;
-        token.accessToken = user.accessToken; // ✅ Store token
-      }
-      return token;
-    },
-    async session({ session, token }) {
-      if (session?.user) {
-        session.user.id = token.id as string;
-        session.user.accessToken = token.accessToken as string; // ✅ Ensure session has token
-      }
-      return session;
-    },
-  },
+  //   callbacks: {
+  //     async jwt({ token, user }) {
+  //       if (user) {
+  //         token.id = user.id;
+  //         token.accessToken = user.accessToken; // ✅ Store token
+  //       }
+  //       return token;
+  //     },
+  //     async session({ session, token }) {
+  //       if (session?.user) {
+  //         session.user.id = token.id as string;
+  //         session.user.accessToken = token.accessToken as string; // ✅ Ensure session has token
+  //       }
+  //       return session;
+  //     },
+  //   },
 };

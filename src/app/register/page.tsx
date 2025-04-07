@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import RegisterForm from "@/components/modules/Auth/register/RegisterForm";
 import { Metadata } from "next";
 
@@ -23,7 +24,9 @@ export const metadata: Metadata = {
 const RegisterPage = () => {
   return (
     <div>
-      <RegisterForm />
+      <Suspense fallback={<div>Loading...</div>}>
+        <RegisterForm />
+      </Suspense>
     </div>
   );
 };

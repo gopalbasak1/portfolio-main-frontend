@@ -53,7 +53,7 @@ export const createProject = async (
     title: data?.title, // ✅ Ensure it's a string
     description: data?.description, // ✅ Ensure it's a string
     liveLink: data?.liveLink, // ✅ Ensure it's a string
-    image: data?.image || "", // ✅ Ensure image URL is a string
+    image: data?.imageUrls || "", // ✅ Ensure image URL is a string
     stack: data?.stack,
     category: data?.category,
     github: data?.github,

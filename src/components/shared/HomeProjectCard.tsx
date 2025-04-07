@@ -35,17 +35,17 @@ const HomeProjectCard = ({ project }: { project: Project }) => {
               <p>{project.category}</p>
             </div>
             <h2 className="text-xl font-bold mt-4">
-              {project.title.length > 20
-                ? project.title.slice(0, 30) + "..."
-                : project.title}
+              {project?.title.length > 20
+                ? project?.title.slice(0, 30) + "..."
+                : project?.title}
             </h2>
 
             {/* Show User Name */}
-            {project.user?.name && (
+            {project?.user?.name && (
               <p className="text-sm font-medium text-gray-500 mt-2">
                 By:{" "}
                 <span className=" font-semibold text-accent hover:underline cursor-pointer">
-                  {project.user.name}
+                  {project?.user?.name}
                 </span>
               </p>
             )}
@@ -58,8 +58,8 @@ const HomeProjectCard = ({ project }: { project: Project }) => {
 
             {/* Show Buttons If Links Exist */}
             <div className="flex items-center gap-4 mt-5">
-              {project.liveLink && (
-                <Link href={project.liveLink} target="_blank">
+              {project?.liveLink && (
+                <Link href={project?.liveLink} target="_blank">
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger className="w-12 h-12 rounded-full bg-gray-800 flex justify-center items-center hover:bg-gray-700">
@@ -73,8 +73,8 @@ const HomeProjectCard = ({ project }: { project: Project }) => {
                 </Link>
               )}
 
-              {project.github && (
-                <Link href={project.github} target="_blank">
+              {project?.github && (
+                <Link href={project?.github} target="_blank">
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger className="w-12 h-12 rounded-full bg-gray-800 flex justify-center items-center hover:bg-gray-700">
@@ -88,7 +88,7 @@ const HomeProjectCard = ({ project }: { project: Project }) => {
                 </Link>
               )}
 
-              <Link href={`/projects/${project._id}`}>
+              <Link href={`/projects/${project?._id}`}>
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger className="w-12 h-12 rounded-full bg-gray-800 flex justify-center items-center hover:bg-gray-700">

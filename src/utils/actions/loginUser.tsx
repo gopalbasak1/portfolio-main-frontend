@@ -1,6 +1,6 @@
-import { FormValues } from "@/app/login/page";
+import { FieldValues } from "react-hook-form";
 
-const loginUser = async (data: FormValues) => {
+const loginUser = async (data: FieldValues) => {
   const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`, {
     method: "POST",
     headers: {
