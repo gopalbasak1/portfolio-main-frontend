@@ -13,22 +13,6 @@ import HomeProjectCard from "@/components/shared/HomeProjectCard";
 import { Project } from "@/types";
 import { getAllProjectsByAdmin } from "@/services/project";
 
-// const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
-
-// // 🟢 Fetch data before rendering
-// const fetchProjects = async () => {
-//   try {
-//     const res = await fetch(`${API_URL}/projects`, {
-//       next: { revalidate: 30 },
-//     });
-//     if (!res.ok) throw new Error("Failed to fetch projects");
-//     return res.json();
-//   } catch (error) {
-//     console.error(error);
-//     return { data: [] }; // Return empty data on error
-//   }
-// };
-
 // 🟢 Generate Metadata dynamically
 export async function generateMetadata(): Promise<Metadata> {
   // const projects = await fetchProjects();
@@ -44,22 +28,7 @@ export async function generateMetadata(): Promise<Metadata> {
       description:
         "Check out my latest projects and expertise in React, Next.js, and more.",
       url: "https://yourwebsite.com",
-      // images: projects.data.slice(0, 1).map((project: Project) => ({
-      //   url: project.image || "/default-image.jpg",
-      //   width: 800,
-      //   height: 600,
-      //   alt: project.title,
-      // })),
     },
-    // twitter: {
-    //   card: "summary_large_image",
-    //   title: "Gopal Basak - MERN Stack Developer",
-    //   description:
-    //     "Explore my latest projects and expertise in modern web development.",
-    //   images: projects.data
-    //     .slice(0, 1)
-    //     .map((project: Project) => project.image || "/default-image.jpg"),
-    // },
   };
 }
 

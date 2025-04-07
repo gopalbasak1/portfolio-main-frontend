@@ -1,8 +1,6 @@
 "use server";
 import BlogsTable from "@/components/shared/BlogsTable";
 import { getAllBlogByAdmin } from "@/services/blog";
-import { authOptions } from "@/utils/authOptions";
-import { getServerSession } from "next-auth";
 
 const AllBlog = async ({
   searchParams,
@@ -12,7 +10,7 @@ const AllBlog = async ({
   const { page } = await searchParams;
   const { data, meta } = await getAllBlogByAdmin(page);
 
-  console.log(data);
+  // console.log(data);
 
   return (
     <div className="p-4 min-h-screen text-white">

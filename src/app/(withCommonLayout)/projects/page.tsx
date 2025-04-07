@@ -1,65 +1,62 @@
-"use server";
+// app/projects/page.tsx or wherever your route is
 import ProjectCard from "@/components/shared/ProjectCard";
 import SliderProject from "@/components/shared/SliderProject";
 import { getAllProjectsByAdmin } from "@/services/project";
 import { Metadata } from "next";
 
-// const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-// // 🟢 Fetch projects from backend
-// const fetchProjects = async () => {
-//   try {
-//     const res = await fetch(`${API_URL}/projects`, { cache: "no-store" });
+// 🟢 Fetch data for metadata generation
+export async function generateMetadata(): Promise<Metadata> {
+  try {
+    const res = await fetch(`${API_URL}/projects`, { cache: "no-store" });
+    const projects = await res.json();
 
-//     return res.json();
-//   } catch (error) {
-//     console.error(error);
-//     return { data: [] }; // Return empty array if fetch fails
-//   }
-// };
+    const firstProject = projects?.data?.[0];
 
-// // 🟢 Generate metadata dynamically based on project data
-// export const metadata: Metadata = {
-//   title: "Gopal Basak | Projects",
-//   description: "Explore my latest projects in React, Next.js, and TypeScript.",
-//   keywords:
-//     "React, Next.js, MERN Stack, TypeScript, JavaScript, Web Development",
-// };
-
-// const firstProject = projects.data[0]; // Get first project as reference
-
-// return {
-//   title: ` Projects - Gopal Basak`,
-//   description: firstProject.description || "Check out my latest projects.",
-//   keywords: `Projects, Portfolio, ${
-//     firstProject.title
-//   }, ${firstProject.stack.join(", ")}`,
-//   openGraph: {
-//     title: `${firstProject.title} | Projects`,
-//     description: firstProject.description,
-//     url: "https://yourwebsite.com/projects",
-//     images: [
-//       {
-//         url: firstProject.image || "/default-image.jpg",
-//         width: 800,
-//         height: 600,
-//         alt: firstProject.title,
-//       },
-//     ],
-//   },
-//   twitter: {
-//     card: "summary_large_image",
-//     title: firstProject.title,
-//     description: firstProject.description,
-//     images: [firstProject.image || "/default-image.jpg"],
-//   },
-// };
-// }
+    return {
+      title: "Projects - Gopal Basak",
+      description:
+        firstProject?.description ||
+        "Explore my latest React and Next.js projects.",
+      keywords: `Projects, Portfolio, ${firstProject?.title || ""}, ${
+        firstProject?.stack?.join(", ") || ""
+      }`,
+      openGraph: {
+        title: `${firstProject?.title || "Projects"} | Gopal Basak`,
+        description:
+          firstProject?.description ||
+          "Explore professional projects by Gopal Basak.",
+        url: "https://yourwebsite.com/projects",
+        images: [
+          {
+            url: firstProject?.image || "/default-image.jpg",
+            width: 800,
+            height: 600,
+            alt: firstProject?.title || "Project image",
+          },
+        ],
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: firstProject?.title || "Projects - Gopal Basak",
+        description:
+          firstProject?.description || "Explore React/Next.js projects.",
+        images: [firstProject?.image || "/default-image.jpg"],
+      },
+    };
+  } catch (error) {
+    console.error("Metadata generation error:", error);
+    return {
+      title: "Projects - Gopal Basak",
+      description: "Explore projects built using React, Next.js, and more.",
+    };
+  }
+}
 
 // 🟢 Projects Page Component
 const Projects = async () => {
   const { data } = await getAllProjectsByAdmin();
-  // console.log(data);
 
   return (
     <div className="h-auto my-20">

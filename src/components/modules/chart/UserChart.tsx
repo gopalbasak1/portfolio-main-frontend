@@ -56,17 +56,17 @@ const UserChart = ({ userData }: { userData: IUser }) => {
       {/* User Statistics */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5 my-6">
         <div className="flex items-center border justify-center border-accent shadow-lg shadow-[#13413a] text-xl font-medium gap-2 h-16">
-          <h2>Total Users:</h2>
+          <h2 className="text-xl">Total Users:</h2>
           <p>{filteredData.length || 0}</p>
         </div>
 
         <div className="flex items-center border justify-center border-accent shadow-lg shadow-[#13413a] text-xl font-medium gap-2 h-16">
-          <h2>Admins:</h2>
+          <h2 className="text-xl">Admins:</h2>
           <p>{roleCounts.admin || 0}</p>
         </div>
 
         <div className="flex items-center border justify-center border-accent shadow-lg shadow-[#13413a] text-xl font-medium gap-2 h-16">
-          <h2>Users:</h2>
+          <h2 className="text-xl">Users:</h2>
           <p>{roleCounts.user || 0}</p>
         </div>
       </div>

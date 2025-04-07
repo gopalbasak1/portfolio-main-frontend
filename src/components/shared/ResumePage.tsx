@@ -70,17 +70,17 @@ const education = {
   icon: "/assets/resume/cap.svg",
   title: "My Education",
   description:
-    "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Aspernatur iste sit autem architecto in obcaecati quis placeat cum ipsam praesentium!",
+    "With a strong academic background in Marketing, I completed both my Bachelor's and Master's degrees in Business Administration. My studies focused on strategic planning, consumer behavior, branding, and real-world marketing applications, laying a solid foundation for my professional growth.",
   items: [
     {
       institution: "New Model Degree College",
-      degree: "Master of Business Administration(MBA)",
+      degree: "Master of Business Administration (MBA)",
       duration: "2019",
       subject: "Marketing",
     },
     {
       institution: "Nasirabad College",
-      degree: "Bachelor of Business Administration(BBA)",
+      degree: "Bachelor of Business Administration (BBA)",
       duration: "2017",
       subject: "Marketing",
     },
@@ -92,7 +92,7 @@ const professionals = {
   icons: "/assets/resume/course.png",
   title: "My Professional Course",
   description:
-    "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Aspernatur iste sit autem architecto in obcaecati quis placeat cum ipsam praesentium!",
+    "I have successfully completed a comprehensive web development course from Programming Hero. This hands-on program covered modern frontend and backend technologies, including HTML, CSS, JavaScript, React, Node.js, Express.js, and MongoDB. It provided me with the skills and confidence to build mern-stack web applications from scratch.",
   items: [
     {
       institution: "Programming Hero",

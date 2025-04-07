@@ -45,7 +45,7 @@ const BlogDetails = ({ blog }: { blog: Blog }) => {
               <div className="text-4xl font-medium text-white/25 text-outline h-10 capitalize">
                 {typeEffect}
               </div>
-              <h1 className="text-xm font-bold text-white capitalize">
+              <h1 className="text-[50px] font-bold text-white capitalize">
                 {blog?.title}
               </h1>
               <div className="flex gap-4 items-center text-xm text-gray-500">
@@ -83,7 +83,7 @@ const BlogDetails = ({ blog }: { blog: Blog }) => {
                 alt={blog?.title ?? "Blog Image"}
                 width={800}
                 height={450}
-                className="w-full h-auto object-cover rounded-xl"
+                className="w-full h-[568px] object-cover rounded-xl"
               />
             ) : (
               <div className="w-full h-full bg-gray-300 flex items-center justify-center text-gray-600 rounded-xl">
