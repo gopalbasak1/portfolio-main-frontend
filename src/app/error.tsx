@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { FaExclamationTriangle } from "react-icons/fa";
+import { Button } from "@/components/ui/button"; // Replace with your button component if different
 
 const ErrorPage = ({
   error,
@@ -11,22 +12,26 @@ const ErrorPage = ({
   reset: () => void;
 }) => {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white p-6">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 to-black text-white p-6">
       <motion.div
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        transition={{ type: "spring", stiffness: 120 }}
-        className="text-center p-8 bg-red-600 shadow-lg rounded-xl max-w-lg w-full"
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ type: "spring", stiffness: 100, damping: 10 }}
+        className="text-center bg-red-600/90 border border-red-500 backdrop-blur-md p-8 shadow-2xl rounded-2xl max-w-lg w-full space-y-4"
       >
-        <FaExclamationTriangle className="text-6xl text-white mx-auto animate-pulse" />
-        <h2 className="text-3xl font-bold mt-4">Oops! Something Went Wrong</h2>
-        <p className="text-lg mt-2 opacity-80">
-          {error.message || "An unexpected error occurred."}
-        </p>
+        <FaExclamationTriangle className="text-yellow-300 text-5xl mx-auto" />
+        <h1 className="text-3xl font-bold">Something Went Wrong</h1>
+        <p className="text-sm text-red-100">{error.message}</p>
+
+        {error.digest && (
+          <p className="text-xs text-red-200 opacity-70">
+            Error ID: {error.digest}
+          </p>
+        )}
 
         <button
-          onClick={() => reset()}
-          className="mt-5 px-6 py-3 bg-teal-500 text-white rounded-lg hover:bg-teal-400 transition-all duration-300"
+          onClick={reset}
+          className="mt-4 bg-yellow-400 hover:bg-yellow-500 text-black font-semibold py-2 px-4 rounded-lg transition duration-200"
         >
           Try Again
         </button>

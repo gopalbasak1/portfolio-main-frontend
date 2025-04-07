@@ -113,7 +113,7 @@ const BlogForm = () => {
       if (res.success) {
         toast.success(res.message);
         router.push(
-          "https://gopal-zeta.vercel.app/admin/dashboard/blog/allBlog"
+          `${process.env.NEXT_PUBLIC_FRONTEND_URL}/admin/dashboard/blog/allBlog`
         );
       }
     } catch (error: any) {

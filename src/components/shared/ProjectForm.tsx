@@ -96,7 +96,7 @@ const ProjectForm = () => {
       if (res.success) {
         toast.success("Project created successfully!");
         router.push(
-          "https://gopal-zeta.vercel.app/admin/dashboard/project/allProject"
+          `${process.env.NEXT_PUBLIC_FRONTEND_URL}/admin/dashboard/project/allProject`
         );
         router.refresh(); // ✅ Ensure UI updates
       } else {
