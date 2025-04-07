@@ -9,11 +9,7 @@ import { useForm, Controller } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useState } from "react";
-import {
-  createProject,
-  uploadImageToCloudinary,
-} from "@/utils/actions/createProjects";
-import { Session } from "next-auth";
+
 import {
   Select,
   SelectContent,
@@ -100,7 +96,7 @@ const ProjectForm = () => {
       if (res.success) {
         toast.success("Project created successfully!");
         router.push(
-          `${process.env.NEXT_PUBLIC_FRONTEND_URL}/admin/dashboard/project/allProject`
+          "https://gopal-zeta.vercel.app/admin/dashboard/project/allProject"
         );
         router.refresh(); // ✅ Ensure UI updates
       } else {

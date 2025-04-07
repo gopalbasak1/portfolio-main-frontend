@@ -12,6 +12,12 @@ const compat = new FlatCompat({
 const eslintConfig = [
   ...compat.extends("next/core-web-vitals", "next/typescript"),
   {
+    parser: "@typescript-eslint/parser", // Ensure TypeScript parsing is enabled
+    parserOptions: {
+      project: "./tsconfig.json", // Make sure ESLint knows where the tsconfig is
+      tsconfigRootDir: __dirname, // Helps to resolve tsconfig relative to current file
+      sourceType: "module", // Treats the file as a module
+    },
     rules: {
       "@typescript-eslint/no-explicit-any": "warn",
       "@typescript-eslint/no-unsafe-assignment": "warn",
