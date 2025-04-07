@@ -138,9 +138,6 @@ const BlogForm = () => {
           <h3 className="text-4xl text-accent text-center mb-6 ">
             Create Your Blog
           </h3>
-          <p className="text-red-500 text-[14px] font-bold text-center my-2 underline">
-            Google & GitHub logged-in users cannot create blogs.
-          </p>
 
           {/* Form */}
           <form

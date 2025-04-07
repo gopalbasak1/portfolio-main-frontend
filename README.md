@@ -5,7 +5,7 @@ Welcome to my personal portfolio and blog website! This project is built using N
 
 ## Live Deployment Link
 
-[Gopal Basak](https://gopal-portfolio.vercel.app/)
+[Gopal Basak](https://gopal-zeta.vercel.app/)
 
 ## 🚀 Features
 
